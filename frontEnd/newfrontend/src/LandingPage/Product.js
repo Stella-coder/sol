@@ -14,7 +14,6 @@ const Products = () => {
   const products = useSelector((state) => state.marketplace.products); // Get products from Redux store
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterCategory, setFilterCategory] = useState("");
 
   // Fetching products from all companies' Firestore sub-collections
   const fetchProducts = async () => {
@@ -33,12 +32,7 @@ const Products = () => {
     setSearchTerm(e.target.value.toLowerCase());
   };
 
-  // Filter functionality: filter by category
-  const filterByCategory = (category) => {
-    setFilterCategory(category);
-  };
-
-  // Filtering logic (search and category)
+  // Filtering logic (search-based)
   useEffect(() => {
     let updatedProducts = products;
 
@@ -48,14 +42,8 @@ const Products = () => {
       );
     }
 
-    if (filterCategory) {
-      updatedProducts = updatedProducts.filter(
-        (product) => product.category === filterCategory
-      );
-    }
-
     setFilteredProducts(updatedProducts);
-  }, [searchTerm, filterCategory, products]);
+  }, [searchTerm, products]);
 
   // Fetch products on component mount
   useEffect(() => {
@@ -76,15 +64,13 @@ const Products = () => {
     <Container>
       <Wrapper>
         <Header>
+          <Overlay />
           <Content>
             <Title>SolRiggs Products</Title>
-            <span>Your trusted source for renewable energy</span>
+            <Subtitle>Your trusted source for renewable energy</Subtitle>
           </Content>
         </Header>
 
-        <Head>Our Products</Head>
-
-        {/* Search Input */}
         <SearchInput
           type="text"
           placeholder="Search products..."
@@ -92,17 +78,6 @@ const Products = () => {
           onChange={handleSearch}
         />
 
-        {/* Filter Buttons */}
-        <SubHeadHolder>
-          <SubHead>
-            <span onClick={() => filterByCategory("")}>All</span>
-            <span onClick={() => filterByCategory("Solar")}>Solar</span>
-            <span onClick={() => filterByCategory("Wind")}>Wind</span>
-            <span onClick={() => filterByCategory("Battery")}>Battery</span>
-          </SubHead>
-        </SubHeadHolder>
-
-        {/* Products List */}
         <Room>
           {filteredProducts.map((product) => (
             <Card key={product.id}>
@@ -110,9 +85,9 @@ const Products = () => {
               <Text>
                 <Name>{product.name}</Name>
                 <Price>${product.price}</Price>
-                <Category>Energy Output :{product.energyOutput}</Category>
+                <Category>Energy Output : {product.energyOutput}</Category>
 
-                <Button  onClick={() => handleAddToCart(product)}>Add to Cart</Button>
+                <Button onClick={() => handleAddToCart(product)}>Add to Cart</Button>
                 <Button onClick={() => handleViewMore(product.id)}>View More</Button>
               </Text>
             </Card>
@@ -125,9 +100,8 @@ const Products = () => {
 
 export default Products;
 
-// Styled Components (remain unchanged from previous example)
-
 // Styled Components
+
 const Container = styled("div")({
   width: "100%",
   minHeight: "120vh",
@@ -145,6 +119,7 @@ const Wrapper = styled("div")({
 const Header = styled("div")({
   width: "100%",
   height: "250px",
+  position: "relative",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -153,22 +128,29 @@ const Header = styled("div")({
   backgroundSize: "cover",
 });
 
+const Overlay = styled("div")({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark overlay for the modal effect
+});
+
 const Content = styled("div")({
   color: "#fff",
   textAlign: "center",
+  zIndex: 1, // Ensures content is above the overlay
 });
 
 const Title = styled("h1")({
   fontSize: "3rem",
 });
 
-const Head = styled("div")({
-  color: "black",
-  fontSize: "2rem",
-  fontWeight: "bold",
-  marginBottom: "10px",
-  marginTop: "30px",
-  textAlign: "center",
+const Subtitle = styled("span")({
+  fontSize: "1.2rem",
+  marginTop: "10px",
+  display: "block",
 });
 
 const SearchInput = styled("input")({
@@ -177,26 +159,6 @@ const SearchInput = styled("input")({
   margin: "20px auto",
   display: "block",
   fontSize: "1rem",
-});
-
-const SubHeadHolder = styled("div")({
-  width: "100%",
-  height: "50px",
-  backgroundColor: "#2E6B62",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-});
-
-const SubHead = styled("div")({
-  width: "700px",
-  height: "100%",
-  display: "flex",
-  justifyContent: "space-around",
-  alignItems:"center",
-  color: "white",
-  fontSize: "18px",
-  cursor: "pointer",
 });
 
 const Room = styled("div")({
